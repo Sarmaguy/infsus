@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #gameList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #gameList li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .add-genre-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Game List</h1>
+</header>
+<main>
+    <a href="addGame.html" class="add-button">Dodaj novu igru</a>
+    <a href="addGenre.html" class="add-genre-button">Dodaj novi žanr</a>
+    <ul id="gameList">
+        <!-- Games will be populated here -->
+    </ul>
+</main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gameList = document.getElementById('gameList');
+
+        async function fetchGames() {
+            try {
+                const gameResponse = await fetch('/api/games');
+                const games = await gameResponse.json();
+
+                const genreResponse = await fetch('/api/genres');
+                const genres = await genreResponse.json();
+
+                const genreMap = {};
+                genres.forEach(genre => {
+                    genreMap[genre.id] = genre.genreName;
+                });
+
+                gameList.innerHTML = ''; // Clear the list before populating
+                games.forEach(game => {
+                    const li = document.createElement('li');
+                    let content = '';
+
+                    if (game.gameName) content += `<strong>Game Name:</strong> ${game.gameName} <br>`;
+                    if (game.description) content += `<strong>Description:</strong> ${game.description} <br>`;
+                    if (game.averageScore) content += `<strong>Average Score:</strong> ${game.averageScore} <br>`;
+                    if (game.gamePrice) content += `<strong>Price:</strong> ${game.gamePrice} <br>`;
+
+                    if (game.genreId && game.genreId.length > 0) {
+                        const genreNames = game.genreId.map(id => genreMap[id]).join(', ');
+                        content += `<strong>Genres:</strong> ${genreNames} <br>`;
+                    }
+
+                    li.innerHTML = `
+                        <div>
+                            ${content}
+                        </div>
+                        <button class="delete-button" data-id="${game.id}">Obriši igru</button>
+                    `;
+                    gameList.appendChild(li);
+                });
+
+                // Add event listeners for delete buttons
+                document.querySelectorAll('.delete-button').forEach(button => {
+                    button.addEventListener('click', async event => {
+                        const gameId = event.target.getAttribute('data-id');
+                        await deleteGame(gameId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching games:', error);
+            }
+        }
+
+        async function deleteGame(gameId) {
+            try {
+                const response = await fetch(`/api/games/${gameId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    fetchGames(); // Refresh the game list after deletion
+                } else {
+                    console.error('Error deleting game:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error deleting game:', error);
+            }
+        }
+
+        // Initial fetch of games
+        fetchGames();
+    });
+</script>
+</body>
+</html>

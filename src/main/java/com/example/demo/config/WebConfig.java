@@ -8,16 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
 
 @Configuration
-public class WebConfig {
-
-    @Autowired
-    private ApplicationContext applicationContext;
+public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public Firestore firebaseApp() throws IOException {

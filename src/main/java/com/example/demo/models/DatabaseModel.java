@@ -123,7 +123,7 @@ public abstract class DatabaseModel {
         return db.document(path).delete();
     }
 
-    void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

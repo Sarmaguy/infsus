@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Genre</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label, input, button {
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Add New Genre</h1>
+</header>
+<main>
+  <form id="addGenreForm">
+    <label for="genreName">Genre Name:</label>
+    <input type="text" id="genreName" name="genreName" required>
+    <button type="submit">Submit</button>
+  </form>
+</main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('addGenreForm');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        genreName: formData.get('genreName')
+      };
+
+      fetch('/api/genres', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/index.html';
+                } else {
+                  console.error('Error adding genre:', response.statusText);
+                }
+              })
+              .catch(error => console.error('Error adding genre:', error));
+    });
+  });
+</script>
+</body>
+</html>
