@@ -3,90 +3,86 @@ package com.example.demo.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
-     private double averageScore;
-    private String description;
-    private String gameName;
-    private double gamePrice;
-    private List<String> genreId;
-    private List<String> platformId;
-    private List<String> reviewId;
-    private String traderId;
-
-    public Game() {
-        // Default constructor required for Firebase
-    }
+public class Game  extends DatabaseModel {
+    private double AverageScore;
+    private String Description;
+    private String GameName;
+    private double GamePrice;
+    private List<String> GenreId;
+    private List<String> PlatformId;
+    private List<String> ReviewId;
+    private String TraderId;
 
     public double getAverageScore() {
-        return averageScore;
+        return AverageScore;
     }
 
     public void setAverageScore(double averageScore) {
-        this.averageScore = averageScore;
+        AverageScore = averageScore;
     }
 
     public String getDescription() {
-        return description;
+        return Description;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        Description = description;
     }
 
     public String getGameName() {
-        return gameName;
+        return GameName;
     }
 
     public void setGameName(String gameName) {
-        this.gameName = gameName;
+        GameName = gameName;
     }
 
     public double getGamePrice() {
-        return gamePrice;
+        return GamePrice;
     }
 
     public void setGamePrice(double gamePrice) {
-        this.gamePrice = gamePrice;
+        GamePrice = gamePrice;
     }
 
     public List<String> getGenreId() {
-        if (genreId == null) {
-            genreId = new ArrayList<>();
-        }
-        return genreId;
+        return GenreId;
     }
 
     public void setGenreId(List<String> genreId) {
-        this.genreId = genreId;
+        GenreId = genreId;
     }
 
     public List<String> getPlatformId() {
-        if (platformId == null) {
-            platformId = new ArrayList<>();
-        }
-        return platformId;
+        return PlatformId;
     }
 
     public void setPlatformId(List<String> platformId) {
-        this.platformId = platformId;
+        PlatformId = platformId;
     }
 
     public List<String> getReviewId() {
-        if (reviewId == null) {
-            reviewId = new ArrayList<>();
-        }
-        return reviewId;
+        return ReviewId;
     }
 
     public void setReviewId(List<String> reviewId) {
-        this.reviewId = reviewId;
+        ReviewId = reviewId;
     }
 
     public String getTraderId() {
-        return traderId;
+        return TraderId;
     }
 
     public void setTraderId(String traderId) {
-        this.traderId = traderId;
+        TraderId = traderId;
     }
+
+    public Game() {
+        super();
+    }
+
+
+
+
+
 }

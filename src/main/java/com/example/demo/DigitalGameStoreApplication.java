@@ -1,5 +1,9 @@
 package com.example.demo;
 
+import com.example.demo.models.DatabaseModel;
+import com.example.demo.models.Game;
+import com.example.demo.models.Genre;
+import com.example.demo.models.Platform;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
@@ -18,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @SpringBootApplication
@@ -40,23 +45,40 @@ public class DigitalGameStoreApplication {
 
 
 	@GetMapping("/hello")
-	public String hello() {
+	public String hello() throws ExecutionException, InterruptedException {
 
-		//get element from firebase with id "aljxa2Cfi6XBajSrWqqh" and put it in object of class Game
-		DocumentReference docRef = db.collection("Game").document("aljxa2Cfi6XBajSrWqqh");
-		ApiFuture<DocumentSnapshot> future = docRef.get();
-		DocumentSnapshot document = null;
-		try {
-			document = future.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		if (document.exists()) {
-			System.out.println("Document data: " + document.getData());
-		} else {
-			System.out.println("No such document!");
+		DatabaseModel.get(db, Game.class, "aljxa2Cfi6XBajSrWqqh");
+
+		Game game2 = new Game();
+
+		game2.setGameName("New Game");
+		game2.setDescription("New Description");
+		game2.setGamePrice(50.0);
+		game2.setAverageScore(5.0);
+
+		DatabaseModel.create(db, game2);
+
+
+		List<Game> games = DatabaseModel.getAll(db, Game.class);
+
+		for (Game game : games) {
+			System.out.println(game.getGameName());
 		}
 
+		game2.setGamePrice(100.0);
+		DatabaseModel.update(db, game2);
+
+		DatabaseModel.delete(db, game2.getId(), Game.class);
+
+		Platform platform = new Platform();
+		platform.setPlatformName("New Platform");
+
+		DatabaseModel.create(db, platform);
+
+		Genre genre = new Genre();
+		genre.setGenreName("New Genre");
+
+		DatabaseModel.create(db, genre);
 
 
 		return "Hello World!";
