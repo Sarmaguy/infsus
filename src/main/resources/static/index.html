@@ -34,24 +34,30 @@
             align-items: center;
         }
 
+        .add-button, .update-button, .delete-button {
+            margin: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         .add-button {
             display: block;
             margin: 20px auto;
-            padding: 10px 20px;
             background-color: #28a745;
             color: white;
             text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
+        }
+
+        .update-button {
+            background-color: #ffc107;
+            color: white;
         }
 
         .delete-button {
             background-color: #dc3545;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
         }
 
         .add-genre-button {
@@ -113,12 +119,22 @@
                         <div>
                             ${content}
                         </div>
-                        <button class="delete-button" data-id="${game.id}">Obriši igru</button>
+                        <div>
+                            <button class="update-button" data-id="${game.id}">Ažuriraj igru</button>
+                            <button class="delete-button" data-id="${game.id}">Obriši igru</button>
+                        </div>
                     `;
                     gameList.appendChild(li);
                 });
 
-                // Add event listeners for delete buttons
+                // Add event listeners for update and delete buttons
+                document.querySelectorAll('.update-button').forEach(button => {
+                    button.addEventListener('click', event => {
+                        const gameId = event.target.getAttribute('data-id');
+                        window.location.href = `updateGame.html?id=${gameId}`;
+                    });
+                });
+
                 document.querySelectorAll('.delete-button').forEach(button => {
                     button.addEventListener('click', async event => {
                         const gameId = event.target.getAttribute('data-id');

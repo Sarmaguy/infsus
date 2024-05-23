@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label, input, button {
+      margin: 10px 0;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      margin: 10px 0;
+    }
+
+    .dropdown button {
+      padding: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      color: black; /* Ensure the text color is visible */
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      width: 100%;
+    }
+
+    .dropdown-content label {
+      display: block;
+      padding: 8px 16px;
+    }
+
+    .dropdown-content label:hover {
+      background-color: #ddd;
+    }
+
+    .dropdown.show .dropdown-content {
+      display: block;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #ffc107;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Update Game</h1>
+</header>
+<main>
+  <form id="updateGameForm">
+    <label for="gameName">Game Name:</label>
+    <input type="text" id="gameName" name="gameName" required>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+
+    <label for="gamePrice">Price:</label>
+    <input type="number" id="gamePrice" name="gamePrice" step="0.01" required>
+
+    <label for="genres">Genres:</label>
+    <div class="dropdown" id="genresDropdown">
+      <button type="button" id="dropdownButton">Odaberi žanrove</button>
+      <div class="dropdown-content" id="dropdownContent">
+        <!-- Checkboxes will be populated here -->
+      </div>
+    </div>
+
+    <button type="submit">Update</button>
+  </form>
+</main>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('id');
+    const dropdown = document.getElementById('genresDropdown');
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownContent = document.getElementById('dropdownContent');
+
+    dropdownButton.addEventListener('click', () => {
+      dropdown.classList.toggle('show');
+    });
+
+    window.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Fetch game data and populate form
+    const gameResponse = await fetch(`/api/games/${gameId}`);
+    const game = await gameResponse.json();
+
+    document.getElementById('gameName').value = game.gameName || '';
+    document.getElementById('description').value = game.description || '';
+    document.getElementById('gamePrice').value = game.gamePrice || '';
+
+    // Fetch options for genres and check those that belong to the game
+    const genreResponse = await fetch('/api/genres');
+    const genres = await genreResponse.json();
+
+    genres.forEach(genre => {
+      const label = document.createElement('label');
+      label.innerHTML = `
+                <input type="checkbox" name="genres" value="${genre.id}" ${game.genreId.includes(genre.id) ? 'checked' : ''}>
+                ${genre.genreName}
+            `;
+      dropdownContent.appendChild(label);
+    });
+
+    // Handle form submission
+    const form = document.getElementById('updateGameForm');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const selectedGenres = Array.from(document.querySelectorAll('input[name="genres"]:checked'))
+              .map(checkbox => checkbox.value);
+
+      if (selectedGenres.length === 0) {
+        alert('Please select at least one genre.');
+        return;
+      }
+
+      const data = {
+        gameName: form.gameName.value,
+        description: form.description.value,
+        gamePrice: parseFloat(form.gamePrice.value),
+        genreId: selectedGenres
+      };
+
+      fetch(`/api/games/${gameId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/index.html';
+                } else {
+                  console.error('Error updating game:', response.statusText);
+                }
+              })
+              .catch(error => console.error('Error updating game:', error));
+    });
+  });
+</script>
+</body>
+</html>
