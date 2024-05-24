@@ -45,7 +45,7 @@
       cursor: pointer;
       width: 100%;
       text-align: left;
-      color: black; /* Ensure the text color is visible */
+      color: black;
     }
 
     .dropdown-content {
@@ -69,6 +69,11 @@
 
     .dropdown.show .dropdown-content {
       display: block;
+    }
+
+    .error-message {
+      color: red;
+      margin: 10px 0;
     }
 
     button {
@@ -103,6 +108,8 @@
       </div>
     </div>
 
+    <div class="error-message" id="errorMessage"></div>
+
     <button type="submit">Update</button>
   </form>
 </main>
@@ -113,6 +120,7 @@
     const dropdown = document.getElementById('genresDropdown');
     const dropdownButton = document.getElementById('dropdownButton');
     const dropdownContent = document.getElementById('dropdownContent');
+    const errorMessage = document.getElementById('errorMessage');
 
     dropdownButton.addEventListener('click', () => {
       dropdown.classList.toggle('show');
@@ -176,10 +184,12 @@
                 if (response.ok) {
                   window.location.href = '/index.html';
                 } else {
-                  console.error('Error updating game:', response.statusText);
+                  return response.text().then(text => { throw new Error(text) });
                 }
               })
-              .catch(error => console.error('Error updating game:', error));
+              .catch(error => {
+                errorMessage.textContent = error.message;
+              });
     });
   });
 </script>

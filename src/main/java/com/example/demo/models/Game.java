@@ -2,12 +2,24 @@ package com.example.demo.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public class Game  extends DatabaseModel {
     private double AverageScore;
+
+    @NotBlank(message = "Description is mandatory")
+    @Size(min = 10, message = "Description must be at least 10 characters")
     private String Description;
+
+    @NotBlank(message = "Game name is mandatory")
+    @Size(min = 3, message = "Game name must be at least 3 characters")
     private String GameName;
+    @Min(value = 0, message = "Price must be positive")
     private double GamePrice;
+    @NotEmpty(message = "At least one genre is required")
     private List<String> GenreId;
     private List<String> PlatformId;
     private List<String> ReviewId;

@@ -70,6 +70,27 @@
             text-decoration: none;
             border-radius: 5px;
         }
+
+        .genre-list-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #17a2b8;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .search-input {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +100,8 @@
 <main>
     <a href="addGame.html" class="add-button">Dodaj novu igru</a>
     <a href="addGenre.html" class="add-genre-button">Dodaj novi žanr</a>
+    <a href="genreList.html" class="genre-list-button">Popis svih žanrova</a>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search games by name...">
     <ul id="gameList">
         <!-- Games will be populated here -->
     </ul>
@@ -86,11 +109,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const gameList = document.getElementById('gameList');
+        const searchInput = document.getElementById('searchInput');
+
+        let allGames = [];
 
         async function fetchGames() {
             try {
                 const gameResponse = await fetch('/api/games');
-                const games = await gameResponse.json();
+                allGames = await gameResponse.json();
 
                 const genreResponse = await fetch('/api/genres');
                 const genres = await genreResponse.json();
@@ -100,50 +126,63 @@
                     genreMap[genre.id] = genre.genreName;
                 });
 
-                gameList.innerHTML = ''; // Clear the list before populating
-                games.forEach(game => {
-                    const li = document.createElement('li');
-                    let content = '';
+                displayGames(allGames, genreMap);
 
-                    if (game.gameName) content += `<strong>Game Name:</strong> ${game.gameName} <br>`;
-                    if (game.description) content += `<strong>Description:</strong> ${game.description} <br>`;
-                    if (game.averageScore) content += `<strong>Average Score:</strong> ${game.averageScore} <br>`;
-                    if (game.gamePrice) content += `<strong>Price:</strong> ${game.gamePrice} <br>`;
-
-                    if (game.genreId && game.genreId.length > 0) {
-                        const genreNames = game.genreId.map(id => genreMap[id]).join(', ');
-                        content += `<strong>Genres:</strong> ${genreNames} <br>`;
-                    }
-
-                    li.innerHTML = `
-                        <div>
-                            ${content}
-                        </div>
-                        <div>
-                            <button class="update-button" data-id="${game.id}">Ažuriraj igru</button>
-                            <button class="delete-button" data-id="${game.id}">Obriši igru</button>
-                        </div>
-                    `;
-                    gameList.appendChild(li);
+                searchInput.addEventListener('input', () => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const filteredGames = allGames.filter(game =>
+                        game.gameName.toLowerCase().includes(searchTerm)
+                    );
+                    displayGames(filteredGames, genreMap);
                 });
 
-                // Add event listeners for update and delete buttons
-                document.querySelectorAll('.update-button').forEach(button => {
-                    button.addEventListener('click', event => {
-                        const gameId = event.target.getAttribute('data-id');
-                        window.location.href = `updateGame.html?id=${gameId}`;
-                    });
-                });
-
-                document.querySelectorAll('.delete-button').forEach(button => {
-                    button.addEventListener('click', async event => {
-                        const gameId = event.target.getAttribute('data-id');
-                        await deleteGame(gameId);
-                    });
-                });
             } catch (error) {
                 console.error('Error fetching games:', error);
             }
+        }
+
+        function displayGames(games, genreMap) {
+            gameList.innerHTML = ''; // Clear the list before populating
+            games.forEach(game => {
+                const li = document.createElement('li');
+                let content = '';
+
+                if (game.gameName) content += `<strong>Game Name:</strong> ${game.gameName} <br>`;
+                if (game.description) content += `<strong>Description:</strong> ${game.description} <br>`;
+                if (game.averageScore) content += `<strong>Average Score:</strong> ${game.averageScore} <br>`;
+                if (game.gamePrice) content += `<strong>Price:</strong> ${game.gamePrice} <br>`;
+
+                if (game.genreId && game.genreId.length > 0) {
+                    const genreNames = game.genreId.map(id => genreMap[id]).join(', ');
+                    content += `<strong>Genres:</strong> ${genreNames} <br>`;
+                }
+
+                li.innerHTML = `
+                    <div>
+                        ${content}
+                    </div>
+                    <div>
+                        <button class="update-button" data-id="${game.id}">Ažuriraj igru</button>
+                        <button class="delete-button" data-id="${game.id}">Obriši igru</button>
+                    </div>
+                `;
+                gameList.appendChild(li);
+            });
+
+            // Add event listeners for update and delete buttons
+            document.querySelectorAll('.update-button').forEach(button => {
+                button.addEventListener('click', event => {
+                    const gameId = event.target.getAttribute('data-id');
+                    window.location.href = `updateGame.html?id=${gameId}`;
+                });
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', async event => {
+                    const gameId = event.target.getAttribute('data-id');
+                    await deleteGame(gameId);
+                });
+            });
         }
 
         async function deleteGame(gameId) {
