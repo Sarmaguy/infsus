@@ -112,6 +112,7 @@
         const searchInput = document.getElementById('searchInput');
 
         let allGames = [];
+        let genreMap = {};
 
         async function fetchGames() {
             try {
@@ -121,19 +122,19 @@
                 const genreResponse = await fetch('/api/genres');
                 const genres = await genreResponse.json();
 
-                const genreMap = {};
+                genreMap = {};
                 genres.forEach(genre => {
                     genreMap[genre.id] = genre.genreName;
                 });
 
-                displayGames(allGames, genreMap);
+                displayGames(allGames);
 
                 searchInput.addEventListener('input', () => {
                     const searchTerm = searchInput.value.toLowerCase();
                     const filteredGames = allGames.filter(game =>
                         game.gameName.toLowerCase().includes(searchTerm)
                     );
-                    displayGames(filteredGames, genreMap);
+                    displayGames(filteredGames);
                 });
 
             } catch (error) {
@@ -141,7 +142,7 @@
             }
         }
 
-        function displayGames(games, genreMap) {
+        function displayGames(games) {
             gameList.innerHTML = '';
             games.forEach(game => {
                 const li = document.createElement('li');
@@ -169,7 +170,6 @@
                 gameList.appendChild(li);
             });
 
-
             document.querySelectorAll('.update-button').forEach(button => {
                 button.addEventListener('click', event => {
                     const gameId = event.target.getAttribute('data-id');
@@ -191,7 +191,8 @@
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    fetchGames();
+                    allGames = allGames.filter(game => game.id !== gameId);
+                    displayGames(allGames);
                 } else {
                     console.error('Error deleting game:', response.statusText);
                 }
@@ -199,7 +200,6 @@
                 console.error('Error deleting game:', error);
             }
         }
-
 
         fetchGames();
     });
