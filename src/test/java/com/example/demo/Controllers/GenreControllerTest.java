@@ -1,7 +1,7 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.models.DatabaseModel;
-import com.example.demo.models.Game;
+import com.example.demo.models.Genre;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.Firestore;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +27,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-@WebMvcTest(GameController.class)
+
+@WebMvcTest(GenreController.class)
 @ExtendWith(MockitoExtension.class)
-class GameControllerTest {
+class GenreControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,47 +42,44 @@ class GameControllerTest {
     private BindingResult bindingResult;
 
     @InjectMocks
-    private GameController gameController;
-
-
+    private GenreController genreController;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(genreController).build();
     }
 
     @Test
-    void getAllGames() throws Exception {
-        Game game = new Game();
-        game.setGameName("Test Game");
+    void getAllGenres() throws Exception {
+        Genre genre = new Genre();
+        genre.setGenreName("Test Genre");
 
         try (MockedStatic<DatabaseModel> mockedDatabaseModel = mockStatic(DatabaseModel.class)) {
-            mockedDatabaseModel.when(() -> DatabaseModel.getAll(firestore, Game.class))
-                    .thenReturn(Collections.singletonList(game));
+            mockedDatabaseModel.when(() -> DatabaseModel.getAll(firestore, Genre.class))
+                    .thenReturn(Collections.singletonList(genre));
 
-            mockMvc.perform(get("/api/games"))
+            mockMvc.perform(get("/api/genres"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].gameName").value("Test Game"));
+                    .andExpect(jsonPath("$[0].genreName").value("Test Genre"));
 
-            mockedDatabaseModel.verify(() -> DatabaseModel.getAll(firestore, Game.class), times(1));
+            mockedDatabaseModel.verify(() -> DatabaseModel.getAll(firestore, Genre.class), times(1));
         }
     }
 
-
     @Test
-    void getGameById() throws Exception {
-        Game game = new Game();
-        game.setGameName("Test Game");
+    void getGenreById() throws Exception {
+        Genre genre = new Genre();
+        genre.setGenreName("Test Genre");
 
         try (var mockedDatabaseModel = mockStatic(DatabaseModel.class)) {
             mockedDatabaseModel.when(() -> DatabaseModel.get(any(Firestore.class), any(Class.class), anyString()))
-                    .thenReturn(game);
+                    .thenReturn(genre);
 
-            mockMvc.perform(get("/api/games/1")
+            mockMvc.perform(get("/api/genres/1")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.gameName").value("Test Game"));
+                    .andExpect(jsonPath("$.genreName").value("Test Genre"));
 
             mockedDatabaseModel.verify(() -> DatabaseModel.get(any(Firestore.class), any(Class.class), anyString()), times(1));
         }
@@ -89,17 +87,15 @@ class GameControllerTest {
 
 
     @Test
-    void deleteGame() throws Exception {
+    void deleteGenre() throws Exception {
         try (MockedStatic<DatabaseModel> mockedDatabaseModel = mockStatic(DatabaseModel.class)) {
             mockedDatabaseModel.when(() -> DatabaseModel.delete(any(Firestore.class), anyString(), any(Class.class)))
                     .thenAnswer(invocation -> null);
 
-            mockMvc.perform(delete("/api/games/hiJG2VjIcS4pUF6Zc4mT"))
+            mockMvc.perform(delete("/api/genres/hiJG2VjIcS4pUF6Zc4mT"))
                     .andExpect(status().isOk());
 
             mockedDatabaseModel.verify(() -> DatabaseModel.delete(any(Firestore.class), anyString(), any(Class.class)), times(1));
         }
     }
-
-
 }
