@@ -103,7 +103,7 @@
     <a href="genreList.html" class="genre-list-button">Popis svih žanrova</a>
     <input type="text" id="searchInput" class="search-input" placeholder="Search games by name...">
     <ul id="gameList">
-        <!-- Games will be populated here -->
+
     </ul>
 </main>
 <script>
@@ -142,7 +142,7 @@
         }
 
         function displayGames(games, genreMap) {
-            gameList.innerHTML = ''; // Clear the list before populating
+            gameList.innerHTML = '';
             games.forEach(game => {
                 const li = document.createElement('li');
                 let content = '';
@@ -169,7 +169,7 @@
                 gameList.appendChild(li);
             });
 
-            // Add event listeners for update and delete buttons
+
             document.querySelectorAll('.update-button').forEach(button => {
                 button.addEventListener('click', event => {
                     const gameId = event.target.getAttribute('data-id');
@@ -191,7 +191,7 @@
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    fetchGames(); // Refresh the game list after deletion
+                    fetchGames();
                 } else {
                     console.error('Error deleting game:', response.statusText);
                 }
@@ -200,7 +200,7 @@
             }
         }
 
-        // Initial fetch of games
+
         fetchGames();
     });
 </script>

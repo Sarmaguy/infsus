@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Genre</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label, input, button {
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #ffc107;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Update Genre</h1>
+</header>
+<main>
+  <form id="updateGenreForm">
+    <label for="genreName">Genre Name:</label>
+    <input type="text" id="genreName" name="genreName" required>
+    <button type="submit">Update</button>
+  </form>
+</main>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const genreId = urlParams.get('id');
+
+
+    const genreResponse = await fetch(`/api/genres/${genreId}`);
+    const genre = await genreResponse.json();
+
+    document.getElementById('genreName').value = genre.genreName || '';
+
+    // Handle form submission
+    const form = document.getElementById('updateGenreForm');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const data = {
+        genreName: form.genreName.value,
+      };
+
+      fetch(`/api/genres/${genreId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/genreList.html';
+                } else {
+                  console.error('Error updating genre:', response.statusText);
+                }
+              })
+              .catch(error => console.error('Error updating genre:', error));
+    });
+  });
+</script>
+</body>
+</html>

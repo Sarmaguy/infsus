@@ -29,17 +29,35 @@
     #genreList li {
       padding: 10px;
       border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-button, .update-button, .delete-button {
+      margin: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
     .back-button {
       display: block;
       margin: 20px auto;
-      padding: 10px 20px;
       background-color: #007bff;
       color: white;
       text-align: center;
-      text-decoration: none;
-      border-radius: 5px;
+    }
+
+    .update-button {
+      background-color: #ffc107;
+      color: white;
+    }
+
+    .delete-button {
+      background-color: #dc3545;
+      color: white;
     }
   </style>
 </head>
@@ -50,7 +68,6 @@
 <main>
   <a href="index.html" class="back-button">Povratak na popis igara</a>
   <ul id="genreList">
-    <!-- Genres will be populated here -->
   </ul>
 </main>
 <script>
@@ -75,19 +92,56 @@
           });
         });
 
-        genreList.innerHTML = ''; // Clear the list before populating
+        genreList.innerHTML = '';
         genres.forEach(genre => {
           const li = document.createElement('li');
           const gameNames = gameMap[genre.id] ? gameMap[genre.id].join(', ') : 'No games for this genre';
-          li.innerHTML = `<strong>Genre:</strong> ${genre.genreName} <br> <strong>Games:</strong> ${gameNames}`;
+          li.innerHTML = `
+            <div>
+              <strong>Genre:</strong> ${genre.genreName} <br>
+              <strong>Games:</strong> ${gameNames}
+            </div>
+            <div>
+              <button class="update-button" data-id="${genre.id}">Ažuriraj žanr</button>
+              <button class="delete-button" data-id="${genre.id}">Obriši žanr</button>
+            </div>
+          `;
           genreList.appendChild(li);
+        });
+
+        document.querySelectorAll('.update-button').forEach(button => {
+          button.addEventListener('click', event => {
+            const genreId = event.target.getAttribute('data-id');
+            window.location.href = `updateGenre.html?id=${genreId}`;
+          });
+        });
+
+        document.querySelectorAll('.delete-button').forEach(button => {
+          button.addEventListener('click', async event => {
+            const genreId = event.target.getAttribute('data-id');
+            await deleteGenre(genreId);
+          });
         });
       } catch (error) {
         console.error('Error fetching genres:', error);
       }
     }
 
-    // Initial fetch of genres and games
+    async function deleteGenre(genreId) {
+      try {
+        const response = await fetch(`/api/genres/${genreId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          fetchGenres();
+        } else {
+          console.error('Error deleting genre:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error deleting genre:', error);
+      }
+    }
+
     fetchGenres();
   });
 </script>

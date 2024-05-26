@@ -104,7 +104,6 @@
         <div class="dropdown" id="genresDropdown">
             <button type="button" id="dropdownButton">Odaberi žanrove</button>
             <div class="dropdown-content" id="dropdownContent">
-                <!-- Checkboxes will be populated here -->
             </div>
         </div>
 
@@ -130,7 +129,7 @@
             }
         });
 
-        // Fetch options for genres
+
         fetch('/api/genres')
             .then(response => response.json())
             .then(genres => {
@@ -144,7 +143,7 @@
                 });
             });
 
-        // Handle form submission
+
         const form = document.getElementById('addGameForm');
         form.addEventListener('submit', event => {
             event.preventDefault();

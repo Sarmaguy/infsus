@@ -104,7 +104,7 @@
     <div class="dropdown" id="genresDropdown">
       <button type="button" id="dropdownButton">Odaberi žanrove</button>
       <div class="dropdown-content" id="dropdownContent">
-        <!-- Checkboxes will be populated here -->
+
       </div>
     </div>
 
@@ -132,7 +132,7 @@
       }
     });
 
-    // Fetch game data and populate form
+
     const gameResponse = await fetch(`/api/games/${gameId}`);
     const game = await gameResponse.json();
 
@@ -140,7 +140,7 @@
     document.getElementById('description').value = game.description || '';
     document.getElementById('gamePrice').value = game.gamePrice || '';
 
-    // Fetch options for genres and check those that belong to the game
+
     const genreResponse = await fetch('/api/genres');
     const genres = await genreResponse.json();
 
@@ -153,7 +153,7 @@
       dropdownContent.appendChild(label);
     });
 
-    // Handle form submission
+
     const form = document.getElementById('updateGameForm');
     form.addEventListener('submit', event => {
       event.preventDefault();
