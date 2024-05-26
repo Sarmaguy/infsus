@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public Firestore firebaseApp() throws IOException {
-        if (FirebaseApp.getApps().isEmpty()) { // Check if Firebase app with name "DEFAULT" doesn't exist
+        if (FirebaseApp.getApps().isEmpty()) {
             FileInputStream serviceAccount = new FileInputStream("./appsettings.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()

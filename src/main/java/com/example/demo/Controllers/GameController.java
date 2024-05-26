@@ -64,7 +64,7 @@ public class GameController {
     }
 
 
-    private boolean isGameNameTaken(String gameName) throws ExecutionException, InterruptedException {
+    boolean isGameNameTaken(String gameName) throws ExecutionException, InterruptedException {
         QuerySnapshot snapshot = firestore.collection("Game")
                 .whereEqualTo("gameName", gameName)
                 .get()
@@ -72,7 +72,7 @@ public class GameController {
         return !snapshot.isEmpty();
     }
 
-    private boolean isGameNameTaken(String gameName, String id) throws ExecutionException, InterruptedException {
+    boolean isGameNameTaken(String gameName, String id) throws ExecutionException, InterruptedException {
         QuerySnapshot snapshot = firestore.collection("Game")
                 .whereEqualTo("gameName", gameName)
                 .get()
